@@ -243,9 +243,21 @@ namespace com.technical.test
                     
                     SerializedObject serializedObject = new UnityEditor.SerializedObject(rotator);
                     SerializedProperty serializedProperty = serializedObject.FindProperty("_identifier");
+                    Debug.Log("Avant : " + serializedProperty.stringValue);
                     serializedProperty.stringValue = identifier;
-                    serializedObject.Update();
+                    Debug.Log("Apres : " + serializedProperty.stringValue);
+
+                    SerializedProperty serializedProperty2 = serializedObject.FindProperty("_timeBeforeStoppingInSeconds");
+                    serializedProperty2.floatValue = timeBeforeStoppingInSeconds;
+
+                    SerializedProperty serializedProperty3 = serializedObject.FindProperty("_shouldReverseRotation");
+                    serializedProperty3.boolValue = shouldReverseRotation;
+                    
+
+                    //serializedObject.UpdateIfRequiredOrScript();
                     EditorGUILayout.PropertyField(serializedProperty);
+
+                    //Debug.Log(serializedObject.hasModifiedProperties);
                     serializedObject.ApplyModifiedProperties();
                 }
             }
