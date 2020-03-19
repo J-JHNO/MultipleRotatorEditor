@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
+using System;
 
 namespace com.technical.test
 {
@@ -56,20 +56,47 @@ namespace com.technical.test
             EditorGUILayout.BeginVertical();
 
             // PART 1
-            //GUILayout.BeginArea(new Rect(0,0,500,100));
-            GUILayout.Label("Rotators to edit", EditorStyles.boldLabel);
-
             ScriptableObject target = this;
             SerializedObject so = new SerializedObject(target);
             SerializedProperty rotatorsProperty = so.FindProperty("rotatorsToEdit");
-
-            EditorGUILayout.PropertyField(rotatorsProperty, true); // True to show children
+            WindowRotatorsToEdit(rotatorsProperty);
             
+            // PART 2
+            WindowEditor();
+            
+            // PART 3
+            WindowSelectedRotators();
+            
+            
+            so.ApplyModifiedProperties();
+
+            //GUILayout.EndArea();
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndScrollView();
+
+        }
+
+        private void WindowRotatorsToEdit(SerializedProperty prop)
+        {
+            //GUILayout.BeginArea(new Rect(0,0,500,100));
+            GUI.backgroundColor = Color.white;
+
+            GUILayout.Label("ROTATORS TO EDIT", EditorStyles.boldLabel);
+            
+            EditorGUILayout.PropertyField(prop, true); // True to show children
+
             //GUILayout.EndArea();
 
             GUILayout.Space(20f);
 
-            // PART 2
+            HorizontalLine(Color.blue);
+            
+        }
+
+        private void WindowEditor()
+        {
             //GUILayout.BeginArea(new Rect(0, 150, 500, 300));
             GUILayout.Label("EDITOR", EditorStyles.boldLabel);
 
@@ -103,7 +130,7 @@ namespace com.technical.test
             EditorGUI.indentLevel++;
             EditorGUILayout.BeginHorizontal();
             objectToRotateBool = EditorGUILayout.BeginToggleGroup("Object to rotate :", objectToRotateBool);
-            objectToRotate = (Transform) EditorGUILayout.ObjectField("", objectToRotate, typeof(Transform), true);
+            objectToRotate = (Transform)EditorGUILayout.ObjectField("", objectToRotate, typeof(Transform), true);
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.EndHorizontal();
 
@@ -128,7 +155,14 @@ namespace com.technical.test
             GUILayout.Space(20f);
 
             EditorGUI.BeginDisabledGroup(rotatorsToEdit.Length == 0 || NonPersistentRotator());
-            if (GUILayout.Button("Validate Changes")) {
+            var style = new GUIStyle(GUI.skin.button);
+            style.normal.textColor = Color.blue;
+            //style.normal.background = new Texture2D(2, 2, TextureFormat.RGB24, false);
+            style.alignment = TextAnchor.MiddleCenter;
+            style.border = GUI.skin.button.border;
+            style.margin = new RectOffset(150, 150, 5, 5);
+            if (GUILayout.Button("Validate Changes", style))
+            {
                 Validate();
             }
             EditorGUI.EndDisabledGroup();
@@ -137,9 +171,13 @@ namespace com.technical.test
 
             GUILayout.Space(20f);
 
-            // PART 3
+            HorizontalLine(Color.blue);
+        }
+
+        private void WindowSelectedRotators()
+        {
             //GUILayout.BeginArea(new Rect(0, 400, 500, 400));
-            GUILayout.Label("Selected rotators", EditorStyles.boldLabel);
+            GUILayout.Label("SELECTED ROTATORS", EditorStyles.boldLabel);
 
             GUILayout.Space(20f);
 
@@ -157,18 +195,18 @@ namespace com.technical.test
                 Rotator[] rotators = (Rotator[])GameObject.FindObjectsOfType<Rotator>();
                 List<GameObject> gameObjects = new List<GameObject>();
 
-                for (int i=0; i<rotatorsToEdit.Length; i++)
+                for (int i = 0; i < rotatorsToEdit.Length; i++)
                 {
                     int x = -420, y = 400;
                     if (rotatorsToEdit[i] != null)
                     {
-                        if (i%2 == 0)
+                        if (i % 2 == 0)
                         {
                             //EditorGUILayout.BeginHorizontal();
                             x += 420;
                         }
                         //GUILayout.BeginArea(new Rect(x, y, 400, 200));
-                        
+
                         GUIStyle s = (new GUIStyle(EditorStyles.textField));
                         s.normal.textColor = Color.blue;
 
@@ -202,22 +240,27 @@ namespace com.technical.test
                         }
 
                         serializedObject.ApplyModifiedProperties();
-                        
+
                         GUILayout.Space(20f);
-                        
-                        
+
+
                     }
                 }
             }
-            
-            so.ApplyModifiedProperties();
+        }
 
-            //GUILayout.EndArea();
+        static void HorizontalLine(Color color)
+        {
+            GUIStyle horizontalLine;
+            horizontalLine = new GUIStyle();
+            horizontalLine.normal.background = EditorGUIUtility.whiteTexture;
+            horizontalLine.margin = new RectOffset(0, 0, 4, 4);
+            horizontalLine.fixedHeight = 2;
 
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.EndScrollView();
-
+            var c = GUI.color;
+            GUI.color = color;
+            GUILayout.Box(GUIContent.none, horizontalLine);
+            GUI.color = c;
         }
 
         bool NonPersistentRotator()
