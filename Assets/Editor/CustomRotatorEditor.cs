@@ -15,7 +15,7 @@ namespace com.technical.test
             if (GUILayout.Button("Rotators Mass Setter"))
             {
                 //RotatorToEdit rotatorEditor = (RotatorToEdit)ScriptableObject.CreateInstance("RotatorToEdit");
-                RotatorToEdit.Init();
+                RotatorEditorWindow.Init();
             }
             
             
