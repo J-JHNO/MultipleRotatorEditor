@@ -10,12 +10,12 @@ namespace com.technical.test
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
+            // Draw default inspector and add a button
+            DrawDefaultInspector(); 
             Rotator rotator = (Rotator)target;
             if (GUILayout.Button("Rotators Mass Setter"))
             {
-                //RotatorToEdit rotatorEditor = (RotatorToEdit)ScriptableObject.CreateInstance("RotatorToEdit");
-                RotatorEditorWindow.Init();
+                RotatorEditorWindow.Init(); // Pop the editor
             }
             
             

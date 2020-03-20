@@ -12,7 +12,7 @@ namespace com.technical.test
         protected SerializedProperty currentProperty;
 
         [MenuItem("Window/Custom/Rotators Mass Setter")]
-        protected void DrawProperties(SerializedProperty prop, bool drawChildren)
+        protected static void DrawProperties(SerializedProperty prop, bool drawChildren)
         {
             string lastPropPath = string.Empty;
             foreach (SerializedProperty p in prop)

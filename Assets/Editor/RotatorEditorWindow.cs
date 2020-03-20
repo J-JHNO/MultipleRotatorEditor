@@ -11,22 +11,23 @@ namespace com.technical.test
     {
         Vector2 scrollPos;
 
-        // PART 1
+        // PART 1 (Selection of the rotators we want to edit)
         public static int size = 0;
         public Rotator[] rotatorsToEdit = new Rotator[size];
 
-        // PART 2
+        // PART 2 (Selection of the variables we want to changes for the selected rotators)
         bool groupEnabled;
         bool identifierBool = false;
-        string identifier = "";
+        string identifier = ""; 
         bool timeBool = false;
-        float timeBeforeStoppingInSeconds = 0;
+        float timeBeforeStoppingInSeconds = 0; 
         bool reverseBool = false;
-        bool shouldReverseRotation = false;
+        bool shouldReverseRotation = false; 
         bool settingsBool = false;
-        RotationSettings rotationsSettings = default;
+
+        // Rotation settings
         bool objectToRotateBool = false;
-        Transform objectToRotate;
+        Transform objectToRotate; 
         bool angleRotationBool = false;
         Vector3 angleRotation;
         bool timeToRotateBool = false;
@@ -37,6 +38,8 @@ namespace com.technical.test
         {
             // Get existing open window or if none, make a new one:
             RotatorEditorWindow window = GetWindow<RotatorEditorWindow>("Rotators Mass Setter");
+
+            // Changing position and resolution of the window
             const int width = 500;
             const int height = 700;
 
@@ -44,64 +47,54 @@ namespace com.technical.test
             var y = (Screen.currentResolution.height - height) / 2;
 
             window.position = new Rect(x, y, width, height);
-
-            //window.serializedObject = new SerializedObject(this);
         }
 
         void OnGUI()
         {
-
+            // Beginning a scrollView in case the window's components leave the window's view
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-
             EditorGUILayout.BeginVertical();
 
-            // PART 1
+            // PART 1 (Selection of the rotators we want to edit)
             ScriptableObject target = this;
             SerializedObject so = new SerializedObject(target);
             SerializedProperty rotatorsProperty = so.FindProperty("rotatorsToEdit");
             WindowRotatorsToEdit(rotatorsProperty);
             
-            // PART 2
+            // PART 2 (Selection of the variables we want to changes for the selected rotators)
             WindowEditor();
             
-            // PART 3
+            // PART 3 (Display of the selected rotators)
             WindowSelectedRotators();
             
-            
             so.ApplyModifiedProperties();
-
-            //GUILayout.EndArea();
-
+            
             EditorGUILayout.EndVertical();
-
             EditorGUILayout.EndScrollView();
-
         }
 
+        // Selection of the rotators we want to change
         private void WindowRotatorsToEdit(SerializedProperty prop)
         {
-            //GUILayout.BeginArea(new Rect(0,0,500,100));
             GUI.backgroundColor = Color.white;
 
             GUILayout.Label("ROTATORS TO EDIT", EditorStyles.boldLabel);
             
             EditorGUILayout.PropertyField(prop, true); // True to show children
 
-            //GUILayout.EndArea();
-
             GUILayout.Space(20f);
 
             HorizontalLine(Color.blue);
-            
         }
 
+        // Selection of the variables in each selected rotator we want to change
         private void WindowEditor()
         {
-            //GUILayout.BeginArea(new Rect(0, 150, 500, 300));
             GUILayout.Label("EDITOR", EditorStyles.boldLabel);
 
             EditorGUILayout.Space();
 
+            // Refer to _identifier attribute we want to change
             EditorGUILayout.BeginHorizontal();
             identifierBool = EditorGUILayout.BeginToggleGroup("Identifier :", identifierBool);
             identifier = EditorGUILayout.TextField(identifier);
@@ -110,6 +103,7 @@ namespace com.technical.test
 
             EditorGUILayout.Space();
 
+            // Refer to _timeBeforeStoppingInSeconds attribute we want to change
             EditorGUILayout.BeginHorizontal();
             timeBool = EditorGUILayout.BeginToggleGroup("Time before stopping in seconds :", timeBool);
             timeBeforeStoppingInSeconds = EditorGUILayout.FloatField(timeBeforeStoppingInSeconds);
@@ -118,6 +112,7 @@ namespace com.technical.test
 
             EditorGUILayout.Space();
 
+            // Refer to _shouldReverseRotation attribute we want to change
             EditorGUILayout.BeginHorizontal();
             reverseBool = EditorGUILayout.BeginToggleGroup("Sould reverse rotation :", reverseBool);
             shouldReverseRotation = EditorGUILayout.Toggle("", shouldReverseRotation);
@@ -126,8 +121,10 @@ namespace com.technical.test
 
             EditorGUILayout.Space();
 
+            // Refer to _rotationsSettings attribute we want to change
             settingsBool = EditorGUILayout.BeginToggleGroup("Rotation settings", settingsBool);
             EditorGUI.indentLevel++;
+            //      Refer to ObjectToRotate attribute
             EditorGUILayout.BeginHorizontal();
             objectToRotateBool = EditorGUILayout.BeginToggleGroup("Object to rotate :", objectToRotateBool);
             objectToRotate = (Transform)EditorGUILayout.ObjectField("", objectToRotate, typeof(Transform), true);
@@ -136,6 +133,7 @@ namespace com.technical.test
 
             EditorGUILayout.Space();
 
+            //      Refer to AngleRotation attribute
             EditorGUILayout.BeginHorizontal();
             angleRotationBool = EditorGUILayout.BeginToggleGroup("Angle rotation :", angleRotationBool);
             angleRotation = EditorGUILayout.Vector3Field("", angleRotation);
@@ -144,6 +142,7 @@ namespace com.technical.test
 
             EditorGUILayout.Space();
 
+            //      Refer to TimeToRotateInSeconds attribute
             EditorGUILayout.BeginHorizontal();
             timeToRotateBool = EditorGUILayout.BeginToggleGroup("Time to rotate in seconds :", timeToRotateBool);
             timeBeforeStoppingInSeconds = EditorGUILayout.FloatField(timeBeforeStoppingInSeconds);
@@ -154,10 +153,16 @@ namespace com.technical.test
 
             GUILayout.Space(20f);
 
+            /* 
+               User must have a rotators to edit list with at least one element 
+               && 
+               all elements of the list must have been selected 
+
+               If one of these conditions is false, the validate button is disable
+            */
             EditorGUI.BeginDisabledGroup(rotatorsToEdit.Length == 0 || NonPersistentRotator());
             var style = new GUIStyle(GUI.skin.button);
             style.normal.textColor = Color.blue;
-            //style.normal.background = new Texture2D(2, 2, TextureFormat.RGB24, false);
             style.alignment = TextAnchor.MiddleCenter;
             style.border = GUI.skin.button.border;
             style.margin = new RectOffset(150, 150, 5, 5);
@@ -167,20 +172,19 @@ namespace com.technical.test
             }
             EditorGUI.EndDisabledGroup();
 
-            //GUILayout.EndArea();
-
             GUILayout.Space(20f);
 
             HorizontalLine(Color.blue);
         }
 
+        // Display of the selected rotators
         private void WindowSelectedRotators()
         {
-            //GUILayout.BeginArea(new Rect(0, 400, 500, 400));
             GUILayout.Label("SELECTED ROTATORS", EditorStyles.boldLabel);
 
             GUILayout.Space(20f);
 
+            // Warning message to help understand why we can't validate
             if (rotatorsToEdit.Length == 0)
             {
                 EditorGUILayout.HelpBox("There is no rotator to modify !", MessageType.Warning);
@@ -195,18 +199,13 @@ namespace com.technical.test
                 Rotator[] rotators = (Rotator[])GameObject.FindObjectsOfType<Rotator>();
                 List<GameObject> gameObjects = new List<GameObject>();
 
+                
+
                 for (int i = 0; i < rotatorsToEdit.Length; i++)
                 {
-                    int x = -420, y = 400;
                     if (rotatorsToEdit[i] != null)
                     {
-                        if (i % 2 == 0)
-                        {
-                            //EditorGUILayout.BeginHorizontal();
-                            x += 420;
-                        }
-                        //GUILayout.BeginArea(new Rect(x, y, 400, 200));
-
+                        
                         GUIStyle s = (new GUIStyle(EditorStyles.textField));
                         s.normal.textColor = Color.blue;
 
@@ -216,39 +215,26 @@ namespace com.technical.test
                         serializedObject.Update();
 
                         SerializedProperty identifierProperty = serializedObject.FindProperty("_identifier");
-                        //Debug.Log(identifierProperty);
                         EditorGUILayout.PropertyField(identifierProperty, true);
 
                         SerializedProperty stopingTimeProperty = serializedObject.FindProperty("_timeBeforeStoppingInSeconds");
-                        //Debug.Log(stopingTimeProperty);
                         EditorGUILayout.PropertyField(stopingTimeProperty, true);
 
                         SerializedProperty reverseProperty = serializedObject.FindProperty("_shouldReverseRotation");
-                        //Debug.Log(reverseProperty);
                         EditorGUILayout.PropertyField(reverseProperty, true);
 
                         SerializedProperty settingsProperty = serializedObject.FindProperty("_rotationsSettings");
-                        //Debug.Log(settingsProperty);
                         EditorGUILayout.PropertyField(settingsProperty, true);
-
-                        //GUILayout.EndArea();
-                        if (i % 2 != 0)
-                        {
-                            //EditorGUILayout.EndHorizontal();
-                            x = 0;
-                            y += 220;
-                        }
-
+                        
                         serializedObject.ApplyModifiedProperties();
 
                         GUILayout.Space(20f);
-
-
                     }
                 }
             }
         }
 
+        // Create a horizontal line with the specified color 
         static void HorizontalLine(Color color)
         {
             GUIStyle horizontalLine;
@@ -262,7 +248,8 @@ namespace com.technical.test
             GUILayout.Box(GUIContent.none, horizontalLine);
             GUI.color = c;
         }
-
+        
+        // Make sure all elements in the list of rotators we want to select are filed
         bool NonPersistentRotator()
         {
             bool nonPersistent = false;
@@ -276,6 +263,7 @@ namespace com.technical.test
             return nonPersistent;
         }
 
+        // Method to apply the changes
         void Validate ()
         {
             foreach (Rotator rotator in rotatorsToEdit)
@@ -306,36 +294,7 @@ namespace com.technical.test
                     {
                         if (objectToRotateBool && p.name == "ObjectToRotate")
                         {
-
-                            //Debug.Log(p.arrayElementType);
-
-                            Debug.Log("p : " + p.ToString());
-                            
-                            rotator.transform.position = objectToRotate.position;
-                            rotator.transform.rotation = objectToRotate.rotation;
-                            rotator.transform.localScale = objectToRotate.localScale;
-                            
-                            
-                            
-                            
-                            foreach (SerializedProperty prop in p)
-                            {
-                                if (prop.name == "position")
-                                {
-                                    prop.vector3Value = objectToRotate.position;
-                                }
-                                if (prop.name == "rotation")
-                                {
-                                    prop.quaternionValue = objectToRotate.rotation;
-                                }
-                                if (prop.name == "localScale")
-                                {
-                                    prop.vector3Value = objectToRotate.localScale;
-                                }
-                                
-                            }
-                            
-                            
+                            p.objectReferenceValue = objectToRotate;
                         }
                         if (angleRotationBool && p.name == "AngleRotation")
                         {
@@ -347,16 +306,8 @@ namespace com.technical.test
                         }
                     }
                 }
-
-                    //serializedObject.UpdateIfRequiredOrScript();
-                    //EditorGUILayout.PropertyField(serializedProperty);
-
-                    //Debug.Log(serializedObject.hasModifiedProperties);
-                    serializedObject.ApplyModifiedProperties();
-               
+                serializedObject.ApplyModifiedProperties();
             }
         }
-        
-
     }
 }
